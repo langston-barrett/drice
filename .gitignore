@@ -1,0 +1,5 @@
+/target
+/*.rs
+rustc-ice*.txt
+*.rlib
+*long-type*.txt

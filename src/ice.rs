@@ -1,0 +1,167 @@
+// for f in ice/*.rs; do printf '("%s", include_str!("../%s")),\n' "${f}" "${f%.rs}.out"; done | copy
+pub(crate) const ICES: &[(&str, &str)] = &[
+    ("ice/100041.rs", include_str!("../ice/100041.out")),
+    ("ice/102252.rs", include_str!("../ice/102252.out")),
+    ("ice/103708.rs", include_str!("../ice/103708.out")),
+    ("ice/108499.rs", include_str!("../ice/108499.out")),
+    ("ice/108814.rs", include_str!("../ice/108814.out")),
+    ("ice/110378.rs", include_str!("../ice/110378.out")),
+    ("ice/111742.rs", include_str!("../ice/111742.out")),
+    ("ice/114920.rs", include_str!("../ice/114920.out")),
+    ("ice/116519-2.rs", include_str!("../ice/116519-2.out")),
+    ("ice/116519.rs", include_str!("../ice/116519.out")),
+    ("ice/117392.rs", include_str!("../ice/117392.out")),
+    ("ice/117460.rs", include_str!("../ice/117460.out")),
+    ("ice/117795.rs", include_str!("../ice/117795.out")),
+    ("ice/118038.rs", include_str!("../ice/118038.out")),
+    ("ice/118603.rs", include_str!("../ice/118603.out")),
+    ("ice/119783.rs", include_str!("../ice/119783.out")),
+    ("ice/120033.rs", include_str!("../ice/120033.out")),
+    ("ice/120254.rs", include_str!("../ice/120254.out")),
+    ("ice/120811.rs", include_str!("../ice/120811.out")),
+    ("ice/120873.rs", include_str!("../ice/120873.out")),
+    ("ice/121858.rs", include_str!("../ice/121858.out")),
+    ("ice/121963.rs", include_str!("../ice/121963.out")),
+    ("ice/122259.rs", include_str!("../ice/122259.out")),
+    ("ice/122529.rs", include_str!("../ice/122529.out")),
+    ("ice/122681.rs", include_str!("../ice/122681.out")),
+    ("ice/122903-1.rs", include_str!("../ice/122903-1.out")),
+    ("ice/123140.rs", include_str!("../ice/123140.out")),
+    ("ice/123629.rs", include_str!("../ice/123629.out")),
+    ("ice/123690.rs", include_str!("../ice/123690.out")),
+    ("ice/123887.rs", include_str!("../ice/123887.out")),
+    ("ice/123959.rs", include_str!("../ice/123959.out")),
+    ("ice/124340.rs", include_str!("../ice/124340.out")),
+    ("ice/125014.rs", include_str!("../ice/125014.out")),
+    ("ice/125769.rs", include_str!("../ice/125769.out")),
+    ("ice/125772.rs", include_str!("../ice/125772.out")),
+    ("ice/125801.rs", include_str!("../ice/125801.out")),
+    ("ice/125841.rs", include_str!("../ice/125841.out")),
+    ("ice/126667.rs", include_str!("../ice/126667.out")),
+    ("ice/127643.rs", include_str!("../ice/127643.out")),
+    ("ice/127972.rs", include_str!("../ice/127972.out")),
+    ("ice/130104.rs", include_str!("../ice/130104.out")),
+    ("ice/130310.rs", include_str!("../ice/130310.out")),
+    ("ice/130346.rs", include_str!("../ice/130346.out")),
+    ("ice/131046.rs", include_str!("../ice/131046.out")),
+    ("ice/131052.rs", include_str!("../ice/131052.out")),
+    ("ice/131292.rs", include_str!("../ice/131292.out")),
+    ("ice/131373.rs", include_str!("../ice/131373.out")),
+    ("ice/131406.rs", include_str!("../ice/131406.out")),
+    ("ice/131534.rs", include_str!("../ice/131534.out")),
+    ("ice/131787.rs", include_str!("../ice/131787.out")),
+    ("ice/132126.rs", include_str!("../ice/132126.out")),
+    ("ice/132765.rs", include_str!("../ice/132765.out")),
+    ("ice/132960.rs", include_str!("../ice/132960.out")),
+    ("ice/133613.rs", include_str!("../ice/133613.out")),
+    ("ice/133966.rs", include_str!("../ice/133966.out")),
+    ("ice/134587.rs", include_str!("../ice/134587.out")),
+    ("ice/134641.rs", include_str!("../ice/134641.out")),
+    ("ice/134838.rs", include_str!("../ice/134838.out")),
+    ("ice/135122.rs", include_str!("../ice/135122.out")),
+    ("ice/135617.rs", include_str!("../ice/135617.out")),
+    ("ice/135720.rs", include_str!("../ice/135720.out")),
+    ("ice/135845.rs", include_str!("../ice/135845.out")),
+    ("ice/136063.rs", include_str!("../ice/136063.out")),
+    ("ice/136138.rs", include_str!("../ice/136138.out")),
+    ("ice/136175-2.rs", include_str!("../ice/136175-2.out")),
+    ("ice/136379.rs", include_str!("../ice/136379.out")),
+    ("ice/136661.rs", include_str!("../ice/136661.out")),
+    ("ice/136766.rs", include_str!("../ice/136766.out")),
+    ("ice/136859.rs", include_str!("../ice/136859.out")),
+    ("ice/137049.rs", include_str!("../ice/137049.out")),
+    ("ice/137084.rs", include_str!("../ice/137084.out")),
+    ("ice/137187.rs", include_str!("../ice/137187.out")),
+    ("ice/137190-2.rs", include_str!("../ice/137190-2.out")),
+    ("ice/137260.rs", include_str!("../ice/137260.out")),
+    ("ice/137467-1.rs", include_str!("../ice/137467-1.out")),
+    ("ice/137582.rs", include_str!("../ice/137582.out")),
+    ("ice/137888.rs", include_str!("../ice/137888.out")),
+    ("ice/138008.rs", include_str!("../ice/138008.out")),
+    ("ice/138009.rs", include_str!("../ice/138009.out")),
+    ("ice/138088.rs", include_str!("../ice/138088.out")),
+    ("ice/138089.rs", include_str!("../ice/138089.out")),
+    ("ice/138156.rs", include_str!("../ice/138156.out")),
+    ("ice/138361.rs", include_str!("../ice/138361.out")),
+    ("ice/138564.rs", include_str!("../ice/138564.out")),
+    ("ice/139089.rs", include_str!("../ice/139089.out")),
+    ("ice/139570.rs", include_str!("../ice/139570.out")),
+    ("ice/139596.rs", include_str!("../ice/139596.out")),
+    ("ice/140099.rs", include_str!("../ice/140099.out")),
+    ("ice/140275.rs", include_str!("../ice/140275.out")),
+    ("ice/140381.rs", include_str!("../ice/140381.out")),
+    ("ice/140729.rs", include_str!("../ice/140729.out")),
+    ("ice/140860.rs", include_str!("../ice/140860.out")),
+    ("ice/140891.rs", include_str!("../ice/140891.out")),
+    ("ice/141014.rs", include_str!("../ice/141014.out")),
+    ("ice/141124.rs", include_str!("../ice/141124.out")),
+    ("ice/141504.rs", include_str!("../ice/141504.out")),
+    ("ice/141952.rs", include_str!("../ice/141952.out")),
+    ("ice/142717.rs", include_str!("../ice/142717.out")),
+    ("ice/143174.rs", include_str!("../ice/143174.out")),
+    ("ice/143787.rs", include_str!("../ice/143787.out")),
+    ("ice/143896.rs", include_str!("../ice/143896.out")),
+    ("ice/144033.rs", include_str!("../ice/144033.out")),
+    ("ice/144241.rs", include_str!("../ice/144241.out")),
+    ("ice/144594.rs", include_str!("../ice/144594.out")),
+    ("ice/145824.rs", include_str!("../ice/145824.out")),
+    ("ice/146353.rs", include_str!("../ice/146353.out")),
+    ("ice/146754.rs", include_str!("../ice/146754.out")),
+    ("ice/146839.rs", include_str!("../ice/146839.out")),
+    ("ice/147756.rs", include_str!("../ice/147756.out")),
+    ("ice/148062.rs", include_str!("../ice/148062.out")),
+    ("ice/148121.rs", include_str!("../ice/148121.out")),
+    ("ice/148283.rs", include_str!("../ice/148283.out")),
+    ("ice/148614.rs", include_str!("../ice/148614.out")),
+    ("ice/148620.rs", include_str!("../ice/148620.out")),
+    ("ice/148621.rs", include_str!("../ice/148621.out")),
+    ("ice/148622.rs", include_str!("../ice/148622.out")),
+    ("ice/148625.rs", include_str!("../ice/148625.out")),
+    ("ice/148628.rs", include_str!("../ice/148628.out")),
+    ("ice/148630.rs", include_str!("../ice/148630.out")),
+    ("ice/148631.rs", include_str!("../ice/148631.out")),
+    ("ice/148632.rs", include_str!("../ice/148632.out")),
+    ("ice/148634.rs", include_str!("../ice/148634.out")),
+    ("ice/87577.rs", include_str!("../ice/87577.out")),
+    ("ice/88296.rs", include_str!("../ice/88296.out")),
+    ("ice/93182.rs", include_str!("../ice/93182.out")),
+    ("ice/93237.rs", include_str!("../ice/93237.out")),
+    ("ice/94846.rs", include_str!("../ice/94846.out")),
+    ("ice/98322.rs", include_str!("../ice/98322.out")),
+    (
+        "ice/project-to-simd-array-field.rs",
+        include_str!("../ice/project-to-simd-array-field.out"),
+    ),
+];
+
+#[cfg(test)]
+mod tests {
+    use super::ICES;
+
+    #[test]
+    fn test_every_rs_file_has_entry_in_ices() {
+        use std::fs;
+        use std::path::Path;
+
+        let ice_dir = Path::new("ice");
+        let mut missing_entries = Vec::new();
+
+        for entry in fs::read_dir(ice_dir).unwrap() {
+            let entry = entry.unwrap();
+            let path = entry.path();
+            if path.extension().and_then(|s| s.to_str()) == Some("rs") {
+                let file_name = path.file_name().unwrap().to_str().unwrap();
+                let expected_path = format!("ice/{file_name}");
+                let found = ICES.iter().any(|(rs_path, _)| *rs_path == expected_path);
+                if !found {
+                    missing_entries.push(expected_path);
+                }
+            }
+        }
+
+        assert!(
+            missing_entries.is_empty(),
+            "The following .rs files in ice/ do not have entries in ICES: {missing_entries:?}",
+        );
+    }
+}

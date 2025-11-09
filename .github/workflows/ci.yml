@@ -1,0 +1,17 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: langston-barrett/gha/.github/workflows/rust-ci.yml@6b3eccde4f930fac1a8a29fb197f581fc3009ecf
+    with:
+      bench: false
+      os: ubuntu-latest
+      pre-hook: |
+        rustup update nightly
+        ./scripts/build.sh
