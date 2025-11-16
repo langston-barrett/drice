@@ -146,7 +146,7 @@ mod tests {
     use std::fs;
     use std::path::Path;
 
-    #[ignore] // takes a long time
+    #[ignore = "takes a long time"]
     #[test]
     fn test_every_rs_file_produces_ice() {
         let directories = [Path::new("ice"), Path::new("ice/dup")];
