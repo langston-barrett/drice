@@ -103,7 +103,7 @@ pub(crate) fn same(l: &str, r: &str) -> bool {
     false
 }
 
-fn extract_file_path(s: &str) -> Option<String> {
+pub(crate) fn extract_file_path(s: &str) -> Option<String> {
     for line in s.lines() {
         if line.starts_with("thread 'rustc'")
             && let Some(idx) = line.find("panicked at ")
@@ -119,7 +119,7 @@ fn extract_file_path(s: &str) -> Option<String> {
     None
 }
 
-fn extract_message(s: &str) -> Option<String> {
+pub(crate) fn extract_message(s: &str) -> Option<String> {
     let mut is_next = false;
     for line in s.lines() {
         if is_next {
@@ -135,7 +135,7 @@ fn extract_message(s: &str) -> Option<String> {
     None
 }
 
-fn extract_query_stack(s: &str) -> Option<String> {
+pub(crate) fn extract_query_stack(s: &str) -> Option<String> {
     let lines: Vec<&str> = s.lines().collect();
     let start_idx = lines
         .iter()

@@ -6,6 +6,7 @@ mod check;
 mod cli;
 mod dedup;
 mod extract;
+mod glance;
 mod ice;
 mod rustc;
 
@@ -49,6 +50,9 @@ fn main() -> anyhow::Result<()> {
         }
         cli::Command::Dedup { directory } => {
             dedup::dedup(dedup::DedupConfig { directory })?;
+        }
+        cli::Command::Glance { file } => {
+            glance::glance(glance::GlanceConfig { file })?;
         }
     }
 
