@@ -6,6 +6,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci:
     uses: langston-barrett/gha/.github/workflows/rust-ci.yml@6b3eccde4f930fac1a8a29fb197f581fc3009ecf
@@ -15,3 +19,12 @@ jobs:
       pre-hook: |
         rustup update nightly
         ./scripts/build.sh
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - uses: langston-barrett/gha/.github/actions/install-linters@585d8ef2d04787e911c2ff3bfbda30e5b3d620f3
+      - run: ./scripts/lint/lint.py

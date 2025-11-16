@@ -1,11 +1,5 @@
-const fn f() -> usize {
-        
-        
-        
-        
-        
-    }
+const fn f() -> usize {}
 
 fn main() {
-     _ = [0; FnMut::call_mut(&mut f, ())];
+    _ = [0; FnMut::call_mut(&mut f, ())];
 }
