@@ -126,6 +126,10 @@ pub(crate) fn extract_message(s: &str) -> Option<String> {
             return Some(line.to_owned());
         }
         if let Some(line) = line.strip_prefix("error: internal compiler error: ") {
+            let first = &line[0..line.find(' ').unwrap_or(line.len())];
+            if first.contains('/') && first.contains(':') {
+                return Some(line[first.len() + 1..].to_owned());
+            }
             return Some(line.to_owned());
         }
         if line.starts_with("thread 'rustc'") && line.contains("panicked at ") {
