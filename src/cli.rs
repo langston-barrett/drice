@@ -38,4 +38,9 @@ pub(crate) enum Command {
         /// Directory containing Rust source files to deduplicate
         directory: PathBuf,
     },
+    /// Print file path, message, and query stack from a text or Rust file
+    Glance {
+        /// Path to a text file (stderr output) or Rust source file (.rs)
+        file: PathBuf,
+    },
 }
