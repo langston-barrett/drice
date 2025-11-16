@@ -16,8 +16,10 @@ pub(crate) fn dedup(config: DedupConfig) -> anyhow::Result<()> {
     // Create output directories
     let dups_dir = dir.join("dups");
     let ok_dir = dir.join("ok");
+    let known_dir = dir.join("known");
     fs::create_dir_all(&dups_dir)?;
     fs::create_dir_all(&ok_dir)?;
+    fs::create_dir_all(&known_dir)?;
 
     // Collect all .rs files in lexical order
     let mut files: Vec<PathBuf> = Vec::new();
@@ -45,6 +47,24 @@ pub(crate) fn dedup(config: DedupConfig) -> anyhow::Result<()> {
             let dest = ok_dir.join(file_name);
             info!("{}: not an ice, moving to ok/", file.display());
             fs::rename(file, &dest)?;
+            bar.inc(1);
+            continue;
+        }
+
+        if let Some(known_ice_path) = check::exists(&stderr) {
+            let known_file_name = PathBuf::from(known_ice_path)
+                .file_name()
+                .unwrap()
+                .to_owned();
+
+            info!(
+                "{}: duplicate of {}, moving to known/{}",
+                file.display(),
+                known_file_name.display(),
+                known_file_name.display(),
+            );
+            fs::rename(file, known_dir.join(known_file_name))?;
+            bar.inc(1);
             continue;
         }
 
