@@ -3,6 +3,8 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::process::Command;
 
+use anyhow::Context;
+
 use crate::{check, rustc};
 
 pub(crate) struct ExtractConfig {
@@ -30,10 +32,20 @@ fn extract_rust_code_block(markdown: &str) -> Option<String> {
 }
 
 pub(crate) fn run_rustc_on_temp(code: &str) -> anyhow::Result<String> {
-    let mut temp_file = tempfile::NamedTempFile::with_suffix(".rs")?;
-    temp_file.write_all(code.as_bytes())?;
-    temp_file.flush()?;
-    rustc::go(temp_file.path())
+    let mut temp_file =
+        tempfile::NamedTempFile::with_suffix(".rs").context("failed to create temporary file")?;
+    temp_file
+        .write_all(code.as_bytes())
+        .context("failed to write code to temporary file")?;
+    temp_file
+        .flush()
+        .context("failed to flush temporary file")?;
+    rustc::go(temp_file.path()).with_context(|| {
+        format!(
+            "failed to run rustc on temporary file: {}",
+            temp_file.path().display()
+        )
+    })
 }
 
 pub(crate) fn extract(config: ExtractConfig) -> anyhow::Result<()> {
@@ -49,8 +61,13 @@ pub(crate) fn extract(config: ExtractConfig) -> anyhow::Result<()> {
 
     let path = PathBuf::from(&config.issue_or_path);
     let (code, stderr) = if path.exists() {
-        let code = fs::read_to_string(path.as_path())?;
-        (code, rustc::go(path.as_path())?)
+        let code = fs::read_to_string(path.as_path())
+            .with_context(|| format!("failed to read file: {}", path.display()))?;
+        (
+            code,
+            rustc::go(path.as_path())
+                .with_context(|| format!("failed to run rustc on file: {}", path.display()))?,
+        )
     } else {
         let output = Command::new("gh")
             .arg("issue")
@@ -58,7 +75,13 @@ pub(crate) fn extract(config: ExtractConfig) -> anyhow::Result<()> {
             .arg(&config.issue_or_path)
             .arg("--repo")
             .arg("rust-lang/rust")
-            .output()?;
+            .output()
+            .with_context(|| {
+                format!(
+                    "failed to execute gh command for issue: {}",
+                    config.issue_or_path
+                )
+            })?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
@@ -77,7 +100,10 @@ pub(crate) fn extract(config: ExtractConfig) -> anyhow::Result<()> {
     if let Some(existing) = check::exists(&stderr) {
         eprintln!("Duplicate of {existing}");
         let path = PathBuf::from(existing);
-        let mut base = PathBuf::from(path.file_name().unwrap()); // TODO unwrap
+        let mut base =
+            PathBuf::from(path.file_name().with_context(|| {
+                format!("failed to get file name from path: {}", path.display())
+            })?);
         let dups = PathBuf::from("ice/dup");
         let mut dup_rs_path = dups.clone();
         dup_rs_path.push(&base);
@@ -85,8 +111,18 @@ pub(crate) fn extract(config: ExtractConfig) -> anyhow::Result<()> {
         base.set_extension("out");
         dup_out_path.push(base);
         if !dup_rs_path.exists() || !dup_out_path.exists() {
-            fs::write(&dup_rs_path, code)?;
-            fs::write(&dup_out_path, stderr)?;
+            fs::write(&dup_rs_path, code).with_context(|| {
+                format!(
+                    "failed to write duplicate RS file: {}",
+                    dup_rs_path.display()
+                )
+            })?;
+            fs::write(&dup_out_path, stderr).with_context(|| {
+                format!(
+                    "failed to write duplicate OUT file: {}",
+                    dup_out_path.display()
+                )
+            })?;
         }
         return Ok(());
     }
@@ -94,8 +130,10 @@ pub(crate) fn extract(config: ExtractConfig) -> anyhow::Result<()> {
     let rs_path = PathBuf::from(format!("ice/{base}.rs"));
     let out_path = PathBuf::from(format!("ice/{base}.out"));
 
-    fs::write(&rs_path, code)?;
-    fs::write(&out_path, stderr)?;
+    fs::write(&rs_path, code)
+        .with_context(|| format!("failed to write RS file: {}", rs_path.display()))?;
+    fs::write(&out_path, stderr)
+        .with_context(|| format!("failed to write OUT file: {}", out_path.display()))?;
 
     println!("Saved to {} and {}", rs_path.display(), out_path.display());
     Ok(())

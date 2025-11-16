@@ -1,5 +1,6 @@
 use std::{fs, path::PathBuf};
 
+use anyhow::Context;
 use tracing::debug;
 
 use crate::rustc;
@@ -175,13 +176,15 @@ pub(crate) fn exists(s: &str) -> Option<&'static str> {
 
 pub(crate) fn check(config: CheckConfig) -> anyhow::Result<()> {
     let p = format!("{}", config.file.display());
-    let mut s = fs::read_to_string(config.file.as_path())?;
+    let mut s = fs::read_to_string(config.file.as_path())
+        .with_context(|| format!("failed to read file: {}", config.file.display()))?;
     if p.ends_with(".rs") {
         if code_uses_internal_features(s.as_str()) {
             eprintln!("{p}: skipping, uses internal features");
             return Ok(());
         }
-        s = rustc::go(config.file.as_path())?;
+        s = rustc::go(config.file.as_path())
+            .with_context(|| format!("failed to run rustc on file: {}", config.file.display()))?;
     }
     if !is_ice(s.as_str()) {
         eprintln!("{p}: not an ICE");
