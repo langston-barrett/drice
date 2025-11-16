@@ -63,7 +63,7 @@ fn uses_internal_features(out: &str) -> bool {
     false
 }
 
-fn same(l: &str, r: &str) -> bool {
+pub(crate) fn same(l: &str, r: &str) -> bool {
     if l == r {
         return true;
     }
@@ -120,9 +120,16 @@ fn extract_file_path(s: &str) -> Option<String> {
 }
 
 fn extract_message(s: &str) -> Option<String> {
+    let mut is_next = false;
     for line in s.lines() {
+        if is_next {
+            return Some(line.to_owned());
+        }
         if let Some(line) = line.strip_prefix("error: internal compiler error: ") {
             return Some(line.to_owned());
+        }
+        if line.starts_with("thread 'rustc'") && line.contains("panicked at ") {
+            is_next = true;
         }
     }
     None

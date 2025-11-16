@@ -33,4 +33,9 @@ pub(crate) enum Command {
         /// Rust source file (.rs)
         path: PathBuf,
     },
+    /// Deduplicate ICEs in a directory
+    Dedup {
+        /// Directory containing Rust source files to deduplicate
+        directory: PathBuf,
+    },
 }
