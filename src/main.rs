@@ -4,6 +4,7 @@ use tracing_subscriber::fmt::format::FmtSpan;
 
 mod check;
 mod cli;
+mod dedup;
 mod extract;
 mod ice;
 mod rustc;
@@ -45,6 +46,9 @@ fn main() -> anyhow::Result<()> {
         }
         cli::Command::Rustc { path } => {
             eprintln!("{}", rustc::go(path.as_path())?);
+        }
+        cli::Command::Dedup { directory } => {
+            dedup::dedup(dedup::DedupConfig { directory })?;
         }
     }
 
