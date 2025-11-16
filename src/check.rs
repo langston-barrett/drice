@@ -225,7 +225,7 @@ mod tests {
         }
     }
 
-    #[ignore] // spuriously fails in CI
+    #[ignore = "spuriously fails in CI"]
     #[test]
     fn test_same_distinct() {
         for (i, (nm0, content1)) in ICES.iter().copied().enumerate() {
