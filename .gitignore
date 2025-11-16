@@ -3,3 +3,6 @@
 rustc-ice*.txt
 *.rlib
 *long-type*.txt
+
+/build.ninja
+/.out/
