@@ -1,5 +1,7 @@
+use std::error::Error;
+
 use clap::Parser as _;
-use tracing::Level;
+use tracing::{Level, trace};
 use tracing_subscriber::fmt::format::FmtSpan;
 
 mod check;
@@ -19,25 +21,30 @@ fn verbosity_to_log_level(verbosity: u8) -> Level {
     }
 }
 
-#[inline]
-fn init_tracing(cli: &cli::Cli) {
-    let verbose = verbosity_to_log_level(cli.verbose);
+fn init_tracing(level: Level) {
     let builder = tracing_subscriber::fmt::fmt()
-        .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
         .with_target(false)
-        .with_max_level(verbose);
-    if let Level::INFO | Level::WARN | Level::ERROR = verbose {
-        let builder = builder.without_time();
+        .with_max_level(level)
+        .with_writer(std::io::stderr);
+    if let Level::TRACE = level {
+        let builder = builder.with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE);
         builder.init();
     } else {
+        let builder = builder.without_time();
         builder.init();
     }
 }
 
-fn main() -> anyhow::Result<()> {
+fn main() -> Result<(), Box<dyn Error>> {
     let cli = cli::Cli::parse();
-    init_tracing(&cli);
+    let verbose = verbosity_to_log_level(cli.verbose);
+    init_tracing(verbose);
+    trace!(?cli);
+    go(cli)?;
+    Ok(())
+}
 
+fn go(cli: cli::Cli) -> anyhow::Result<()> {
     match cli.command {
         cli::Command::Check { file } => {
             check::check(check::CheckConfig { file })?;
@@ -55,7 +62,6 @@ fn main() -> anyhow::Result<()> {
             glance::glance(glance::GlanceConfig { file })?;
         }
     }
-
     Ok(())
 }
 
