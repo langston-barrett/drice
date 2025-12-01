@@ -26,18 +26,18 @@ for f in ice/*.rs ice/dup/*.rs; do
     true
   else
     no=$(basename "${f%.rs}")
-    if [[ -n "${CI}" ]]; then
+    if [[ -n "${CI:-}" ]]; then
       printf "\nNo ICE: %s\n" "${f}"
       continue
     fi
-    state=$(gh --repo rust-lang/rust issue view "${no}" --json 'state' --jq '.state')
+    state=$(gh --repo rust-lang/rust issue view "${no}" --json 'state' --jq '.state' || echo "OPEN")
     if [[ ${state} == OPEN ]]; then
       printf "\nIssue open, but no ICE: %s\n" "${f}"
     elif [[ ${state} == CLOSED ]]; then
       printf "\nFixed: %s\n" "${f}"
       ./scripts/retire.sh "${f}" || true
     else
-      printf "\Unknown state %s for %s\n" "${state}" "${f}"
+      printf "Unknown state %s for %s\n" "${state}" "${f}"
       exit 1
     fi
   fi
