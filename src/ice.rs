@@ -115,6 +115,7 @@ pub(crate) const ICES: &[(&str, &str)] = &[
     ("ice/148631.rs", include_str!("../ice/148631.out")),
     ("ice/148632.rs", include_str!("../ice/148632.out")),
     ("ice/148838.rs", include_str!("../ice/148838.out")),
+    ("ice/149277.rs", include_str!("../ice/149277.out")),
     ("ice/87577.rs", include_str!("../ice/87577.out")),
     ("ice/88296.rs", include_str!("../ice/88296.out")),
     ("ice/93182.rs", include_str!("../ice/93182.out")),

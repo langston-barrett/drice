@@ -18,7 +18,8 @@ pub fn is_ice(out: &str) -> bool {
         || out.contains("error: rustc interrupted by SIGSEGV, printing backtrace")
 }
 
-fn code_uses_internal_features(code: &str) -> bool {
+#[allow(clippy::manual_find)]
+fn code_uses_internal_features(code: &str) -> Option<&str> {
     for feat in [
         "break rust",
         "core_intrinsics", // feature(..)
@@ -44,10 +45,10 @@ fn code_uses_internal_features(code: &str) -> bool {
                       // "span_delayed_bug_from_inside_query",
     ] {
         if code.contains(feat) {
-            return true;
+            return Some(feat);
         }
     }
-    false
+    None
 }
 
 fn uses_internal_features(out: &str) -> bool {
@@ -182,8 +183,8 @@ pub fn check(config: CheckConfig) -> anyhow::Result<()> {
     let mut s = fs::read_to_string(config.file.as_path())
         .with_context(|| format!("failed to read file: {}", config.file.display()))?;
     if p.ends_with(".rs") {
-        if code_uses_internal_features(s.as_str()) {
-            eprintln!("{p}: skipping, uses internal features");
+        if let Some(feat) = code_uses_internal_features(s.as_str()) {
+            eprintln!("{p}: skipping, uses internal feature(s) `{feat}`");
             return Ok(());
         }
         s = rustc::go(config.file.as_path())
