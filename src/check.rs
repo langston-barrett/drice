@@ -6,20 +6,29 @@ use tracing::debug;
 use crate::rustc;
 
 #[derive(Debug)]
-pub struct CheckConfig {
-    pub file: PathBuf,
+pub(crate) struct CheckConfig {
+    pub(crate) file: PathBuf,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum IceStatus {
+    NotAnIce,
+    UsesInternalFeatures,
+    DuplicateOfExisting(&'static str),
+    AppearsNew,
 }
 
 #[must_use]
-pub fn is_ice(out: &str) -> bool {
+pub(crate) fn is_ice(out: &str) -> bool {
     out.contains("error: internal compiler error:")
         || out.contains("error: the compiler unexpectedly panicked")
         // This produces lots of false positives with stack overflow...
         || out.contains("error: rustc interrupted by SIGSEGV, printing backtrace")
 }
 
+#[must_use]
 #[allow(clippy::manual_find)]
-fn code_uses_internal_features(code: &str) -> Option<&str> {
+pub fn code_uses_internal_features(code: &str) -> Option<&str> {
     for feat in [
         "break rust",
         "core_intrinsics", // feature(..)
@@ -177,8 +186,21 @@ pub(crate) fn exists(s: &str) -> Option<&'static str> {
     None
 }
 
-#[allow(clippy::missing_errors_doc)]
-pub fn check(config: CheckConfig) -> anyhow::Result<()> {
+#[must_use]
+pub fn analyze_ice(output: &str) -> IceStatus {
+    if !is_ice(output) {
+        return IceStatus::NotAnIce;
+    }
+    if uses_internal_features(output) {
+        return IceStatus::UsesInternalFeatures;
+    }
+    if let Some(existing) = exists(output) {
+        return IceStatus::DuplicateOfExisting(existing);
+    }
+    IceStatus::AppearsNew
+}
+
+pub(crate) fn check(config: CheckConfig) -> anyhow::Result<()> {
     let p = format!("{}", config.file.display());
     let mut s = fs::read_to_string(config.file.as_path())
         .with_context(|| format!("failed to read file: {}", config.file.display()))?;
@@ -190,18 +212,19 @@ pub fn check(config: CheckConfig) -> anyhow::Result<()> {
         s = rustc::go(config.file.as_path())
             .with_context(|| format!("failed to run rustc on file: {}", config.file.display()))?;
     }
-    if !is_ice(s.as_str()) {
-        eprintln!("{p}: not an ICE");
-        return Ok(());
-    }
-    if uses_internal_features(s.as_str()) {
-        eprintln!("{p}: skipping, uses internal features");
-        return Ok(());
-    }
-    if let Some(existing) = exists(s.as_str()) {
-        eprintln!("{p}: duplicate of {existing}");
-    } else {
-        eprintln!("{p}: appears new!");
+    match analyze_ice(s.as_str()) {
+        IceStatus::NotAnIce => {
+            eprintln!("{p}: not an ICE");
+        }
+        IceStatus::UsesInternalFeatures => {
+            eprintln!("{p}: skipping, uses internal features");
+        }
+        IceStatus::DuplicateOfExisting(existing) => {
+            eprintln!("{p}: duplicate of {existing}");
+        }
+        IceStatus::AppearsNew => {
+            eprintln!("{p}: appears new!");
+        }
     }
     Ok(())
 }

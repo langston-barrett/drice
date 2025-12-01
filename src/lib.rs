@@ -3,5 +3,6 @@ mod check;
 mod ice;
 mod rustc;
 
-pub use check::check;
-pub use check::is_ice;
+pub use check::IceStatus;
+pub use check::analyze_ice;
+pub use check::code_uses_internal_features;
