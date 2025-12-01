@@ -5,11 +5,13 @@ use tracing::debug;
 
 use crate::rustc;
 
-pub(crate) struct CheckConfig {
+#[derive(Debug)]
+pub struct CheckConfig {
     pub file: PathBuf,
 }
 
-pub(crate) fn is_ice(out: &str) -> bool {
+#[must_use]
+pub fn is_ice(out: &str) -> bool {
     out.contains("error: internal compiler error:")
         || out.contains("error: the compiler unexpectedly panicked")
         // This produces lots of false positives with stack overflow...
@@ -174,7 +176,8 @@ pub(crate) fn exists(s: &str) -> Option<&'static str> {
     None
 }
 
-pub(crate) fn check(config: CheckConfig) -> anyhow::Result<()> {
+#[allow(clippy::missing_errors_doc)]
+pub fn check(config: CheckConfig) -> anyhow::Result<()> {
     let p = format!("{}", config.file.display());
     let mut s = fs::read_to_string(config.file.as_path())
         .with_context(|| format!("failed to read file: {}", config.file.display()))?;

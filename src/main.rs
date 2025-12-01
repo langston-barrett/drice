@@ -2,13 +2,13 @@ use clap::Parser as _;
 use tracing::Level;
 use tracing_subscriber::fmt::format::FmtSpan;
 
-mod check;
-mod cli;
-mod dedup;
-mod extract;
-mod glance;
-mod ice;
-mod rustc;
+pub mod check;
+pub mod cli;
+pub mod dedup;
+pub mod extract;
+pub mod glance;
+pub mod ice;
+pub mod rustc;
 
 fn verbosity_to_log_level(verbosity: u8) -> Level {
     match verbosity {
