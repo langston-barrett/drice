@@ -1,6 +1,7 @@
 use std::{fs, path::Path, process};
 
 use anyhow::Context;
+use tracing::debug;
 
 pub(crate) fn go(path: &Path) -> anyhow::Result<String> {
     let temp_file = tempfile::NamedTempFile::new().context("failed to create temporary file")?;
@@ -17,8 +18,9 @@ pub(crate) fn go(path: &Path) -> anyhow::Result<String> {
     if content.contains("// @compile-flags: --edition=2024") {
         cmd = cmd.arg("--edition=2024");
     }
+    cmd = cmd.arg(path);
+    debug!("command: {cmd:?}");
     let output = cmd
-        .arg(path)
         // .env("RUSTC_ICE", "0")
         .env("RUST_BACKTRACE", "1")
         .stderr(process::Stdio::piped())
