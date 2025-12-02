@@ -11,19 +11,31 @@ pub(crate) struct CheckConfig {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub enum IceType {
+    Segfault,
+    Other,
+}
+
+#[allow(variant_size_differences)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum IceStatus {
     NotAnIce,
     UsesInternalFeatures,
     DuplicateOfExisting(&'static str),
-    AppearsNew,
+    AppearsNew(IceType),
 }
 
 #[must_use]
-pub(crate) fn is_ice(out: &str) -> bool {
-    out.contains("error: internal compiler error:")
+pub(crate) fn is_ice(out: &str) -> Option<IceType> {
+    if out.contains("error: rustc interrupted by SIGSEGV, printing backtrace") {
+        Some(IceType::Segfault)
+    } else if out.contains("error: internal compiler error:")
         || out.contains("error: the compiler unexpectedly panicked")
-        // This produces lots of false positives with stack overflow...
-        || out.contains("error: rustc interrupted by SIGSEGV, printing backtrace")
+    {
+        Some(IceType::Other)
+    } else {
+        None
+    }
 }
 
 #[must_use]
@@ -188,16 +200,16 @@ pub(crate) fn exists(s: &str) -> Option<&'static str> {
 
 #[must_use]
 pub fn analyze_ice(output: &str) -> IceStatus {
-    if !is_ice(output) {
-        return IceStatus::NotAnIce;
+    if let Some(ice_type) = is_ice(output) {
+        if uses_internal_features(output) {
+            return IceStatus::UsesInternalFeatures;
+        }
+        if let Some(existing) = exists(output) {
+            return IceStatus::DuplicateOfExisting(existing);
+        }
+        return IceStatus::AppearsNew(ice_type);
     }
-    if uses_internal_features(output) {
-        return IceStatus::UsesInternalFeatures;
-    }
-    if let Some(existing) = exists(output) {
-        return IceStatus::DuplicateOfExisting(existing);
-    }
-    IceStatus::AppearsNew
+    IceStatus::NotAnIce
 }
 
 pub(crate) fn check(config: CheckConfig) -> anyhow::Result<()> {
@@ -222,8 +234,11 @@ pub(crate) fn check(config: CheckConfig) -> anyhow::Result<()> {
         IceStatus::DuplicateOfExisting(existing) => {
             eprintln!("{p}: duplicate of {existing}");
         }
-        IceStatus::AppearsNew => {
-            eprintln!("{p}: appears new!");
+        IceStatus::AppearsNew(IceType::Segfault) => {
+            eprintln!("{p}: appears new! (segfault)");
+        }
+        IceStatus::AppearsNew(IceType::Other) => {
+            eprintln!("{p}: appears new! (not a segfault)");
         }
     }
     Ok(())
