@@ -94,7 +94,7 @@ pub(crate) fn extract(config: ExtractConfig) -> anyhow::Result<()> {
         (code, stderr)
     };
 
-    if !check::is_ice(stderr.as_str()) {
+    if check::is_ice(stderr.as_str()).is_none() {
         return Err(anyhow::anyhow!("Not an ICE:\n{stderr}"));
     }
     if let Some(existing) = check::exists(&stderr) {
@@ -169,7 +169,7 @@ mod tests {
                         }
                     };
 
-                    if !is_ice(stderr.as_str()) {
+                    if is_ice(stderr.as_str()).is_none() {
                         failures.push(format!(
                             "{} does not produce an ICE\n\n{stderr}",
                             path.display()

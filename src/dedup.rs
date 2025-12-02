@@ -53,7 +53,7 @@ pub(crate) fn dedup(config: DedupConfig) -> anyhow::Result<()> {
         let stderr = rustc::go(file.as_path())
             .with_context(|| format!("failed to run rustc on file: {}", file.display()))?;
 
-        if !check::is_ice(&stderr) {
+        if check::is_ice(&stderr).is_none() {
             let file_name = file.file_name().with_context(|| {
                 format!("failed to get file name from path: {}", file.display())
             })?;
