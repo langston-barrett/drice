@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-#[derive(clap::Parser)]
+#[derive(Debug, clap::Parser)]
 #[command(name = "drice")]
 #[command(about = "Dr. Ice diagnoses internal compiler errors (ICEs) in rustc")]
 pub(crate) struct Cli {
@@ -16,7 +16,7 @@ pub(crate) struct Cli {
     pub command: Command,
 }
 
-#[derive(clap::Subcommand)]
+#[derive(Debug, clap::Subcommand)]
 pub(crate) enum Command {
     /// Check if a program is a known ICE
     Check {

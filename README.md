@@ -37,6 +37,22 @@ This will attempt to download the content of the first `rust` Markdown code
 block, check if it ICEs with current nightly, ensure that it is not a known
 duplicate, and save it to `ice/`.
 
+## Trophy case
+
+This is a list of duplicate issues on `rust-lang` repos found by Dr. Ice.
+
+- [rust#129425](https://github.com/rust-lang/rust/issues/129425#event-21017164882)
+
+For an issue to make this list, it needs to be discovered by Dr. Ice and then
+confirmed to be a duplicate. To be confirmed as a duplicate is to:
+
+- be closed as a duplicate,
+- be explicitly mentioned as a duplicate, or
+- be closed by the same commit as the older issue.
+
+To be discovered by Dr. Ice means for Dr. Ice to describe it as a duplicate when
+it was not previously confirmed to be a duplicate.
+
 ## Legal
 
 Some files in `ices/` are from `tests/crashes` in `rust-lang/rust`, the licenses
