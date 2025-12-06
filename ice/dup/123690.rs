@@ -3,7 +3,7 @@
 fn more_discriminant_overflow() {
      enum Infallible {}
 
-     
+
 
     #[repr(u8)]
 

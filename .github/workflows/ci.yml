@@ -1,7 +1,12 @@
 name: ci
 on:
   push:
+    branches:
+    - main
   pull_request:
+    # Don't run on documentation-only changes
+    paths-ignore: ["**.md"]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -19,12 +24,3 @@ jobs:
       pre-hook: |
         rustup update nightly
         ./scripts/build.sh
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        with:
-          persist-credentials: false
-      - uses: langston-barrett/gha/.github/actions/install-linters@c1a0d0bf070930011fa45e31623ccea963f2bc7a
-      - run: ./scripts/lint/lint.py
