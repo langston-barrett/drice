@@ -4,5 +4,4 @@ rustc-ice*.txt
 *.rlib
 *long-type*.txt
 
-/*.ninja
-/.out/
+/.lun/
